@@ -1,0 +1,3 @@
+Show:
+<br>
+@dump($user)
