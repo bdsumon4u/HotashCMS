@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "12524947d8c752f84bc21aaaede06bfa",
+    "content-hash": "1f8801d7a08d0ec34efe7530d5a55c1c",
     "packages": [
         {
             "name": "brick/math",
@@ -892,6 +892,56 @@
                 }
             ],
             "time": "2022-03-20T21:55:58+00:00"
+        },
+        {
+            "name": "hotash/system",
+            "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "system/core",
+                "reference": "49f7d29c2368a9954079bbe9c7139e5cdf217059"
+            },
+            "require": {
+                "laravel/framework": "^9.2"
+            },
+            "type": "project",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Hotash\\Base\\Providers\\BaseServiceProvider"
+                    ],
+                    "aliases": []
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Hotash\\Base\\": "base/src/"
+                },
+                "files": [
+                    "functions.php"
+                ]
+            },
+            "authors": [
+                {
+                    "name": "Sumon Ahmed",
+                    "email": "bdsumon4u@gmail.com"
+                }
+            ],
+            "description": "The core functionalities of the HotashCMS system.",
+            "homepage": "https://cms.hotash.tech",
+            "keywords": [
+                "Hotash",
+                "Hotash CMS",
+                "Hotash Platform",
+                "Hotash System"
+            ],
+            "support": {
+                "issues": "https://cms.hotash.tech",
+                "document": "https://cms.hotash.tech"
+            },
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "laravel/framework",
@@ -7728,12 +7778,14 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "hotash/system": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.0.2"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.2.0"
 }
