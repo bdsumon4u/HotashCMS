@@ -2,31 +2,19 @@
 
 namespace App\Http\Middleware;
 
-use App\Providers\RouteServiceProvider;
-use Closure;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Hotash\Authable\Middleware\RedirectIfAuthenticated as Middleware;
 
-class RedirectIfAuthenticated
+class RedirectIfAuthenticated extends Middleware
 {
     /**
-     * Handle an incoming request.
+     * Get the path the user should be redirected to when they are not authenticated.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
-     * @param  string|null  ...$guards
-     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+     * @param  string|null  $as
+     * @return string|null
      */
-    public function handle(Request $request, Closure $next, ...$guards)
+    protected function redirectTo($request, $as)
     {
-        $guards = empty($guards) ? [null] : $guards;
-
-        foreach ($guards as $guard) {
-            if (Auth::guard($guard)->check()) {
-                return redirect(RouteServiceProvider::HOME);
-            }
-        }
-
-        return $next($request);
+        return route($as.'dashboard');
     }
 }
