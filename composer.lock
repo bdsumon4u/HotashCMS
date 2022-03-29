@@ -995,6 +995,37 @@
             "time": "2022-03-20T21:55:58+00:00"
         },
         {
+            "name": "hotash/admin",
+            "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "system/packs/admin",
+                "reference": "e759a4e703dcb3103e660c4683275361d6522a0c"
+            },
+            "require": {
+                "hotash/authable": "*@dev"
+            },
+            "type": "package",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Hotash\\Admin\\Providers\\AdminServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Hotash\\Admin\\": "src",
+                    "Database\\Factories\\": "database/factories",
+                    "Database\\Seeders\\": "database/seeds"
+                }
+            },
+            "description": "Admin package for HotashCMS",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
             "name": "hotash/authable",
             "version": "dev-master",
             "dist": {
@@ -1036,6 +1067,7 @@
                 "reference": "07b7f3ca1371e106485d13756426c954dc1266cb"
             },
             "require": {
+                "hotash/admin": "*@dev",
                 "hotash/authable": "*@dev",
                 "laravel/framework": "^9.2"
             },

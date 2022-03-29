@@ -1,0 +1,26 @@
+<?php
+
+use App\Providers\RouteServiceProvider;
+use Hotash\Admin\Tables\TenantTable;
+use Hotash\DataTable\InertiaTable;
+use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
+
+/*
+|--------------------------------------------------------------------------
+| Admin Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register admin routes for your application. These
+| routes are loaded by the AuthProvider within a group which
+| contains the "web" middleware group. Now create something great!
+|
+*/
+
+Route::redirect('/', RouteServiceProvider::HOME);
+
+Route::middleware(['auth:admin', 'verified'])->group(function () {
+    Route::get('/dashboard', function () {
+        return Inertia::render('packs/admin::Dashboard');
+    })->name('dashboard');
+});
