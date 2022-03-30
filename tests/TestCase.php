@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\URL;
 
@@ -10,6 +11,7 @@ abstract class TestCase extends BaseTestCase
     use CreatesApplication;
 
     protected ?string $guard = null;
+    protected ?Model $tenant = null;
 
     /**
      * Setup the test environment.
@@ -29,6 +31,7 @@ abstract class TestCase extends BaseTestCase
         $app_url = config('app.url', 'localhost');
         $domain = parse_url($app_url, PHP_URL_SCHEME).'://';
         if ($this->guard) $domain .= "{$this->guard}.";
+        if ($id = $this->tenant?->id) $domain .= "{$id}.";
         $domain .= parse_url($app_url, PHP_URL_HOST);
         URL::formatHostUsing(fn () => $domain);
     }

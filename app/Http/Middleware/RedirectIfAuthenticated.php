@@ -15,6 +15,7 @@ class RedirectIfAuthenticated extends Middleware
      */
     protected function redirectTo($request, $as)
     {
-        return route($as.'dashboard');
+        $tenant = tenant() ? 'tenant.' : '';
+        return route($tenant.$as.'dashboard');
     }
 }

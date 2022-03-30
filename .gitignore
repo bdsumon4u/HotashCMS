@@ -2,6 +2,7 @@
 /public/hot
 /public/storage
 /public/*.json
+/storage/tenant_*
 /storage/*.key
 /vendor
 .env

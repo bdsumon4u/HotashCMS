@@ -29,12 +29,16 @@ class RouteServiceProvider extends ServiceProvider
         $this->configureRateLimiting();
 
         $this->routes(function () {
-            Route::prefix('api')
-                ->middleware('api')
-                ->group(base_path('routes/api.php'));
+            foreach (config('tenancy.central_domains', []) as $domain) {
+                Route::domain($domain)
+                    ->prefix('api')
+                    ->middleware('api')
+                    ->group(base_path('routes/api.php'));
 
-            Route::middleware('web')
-                ->group(base_path('routes/web.php'));
+                Route::domain($domain)
+                    ->middleware('web')
+                    ->group(base_path('routes/web.php'));
+            }
         });
     }
 
