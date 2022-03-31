@@ -1,4 +1,5 @@
 const mix = require('laravel-mix');
+const glob = require('glob');
 
 /*
  |--------------------------------------------------------------------------
@@ -20,6 +21,18 @@ mix.js('resources/js/app.js', 'public/js').vue()
         '@': 'resources/js',
         '%': 'system',
     });
+
+// Run all webpack.mix.js in app
+glob.sync('./system/**/**/webpack.mix.js').forEach(item => require(item));
+
+// Run only for a package, replace [package] by the name of package you want to compile assets
+// require('./system/packs/[package]/webpack.mix.js');
+
+// Run only for a plugin, replace [plugin] by the name of plugin you want to compile assets
+// require('./system/plugins/[plugin]/webpack.mix.js');
+
+// Run only for themes, you shouldn't modify below config, just uncomment if you want to compile only theme's assets
+// glob.sync('./system/themes/**/webpack.mix.js').forEach(item => require(item));
 
 if (mix.inProduction()) {
     mix.version();

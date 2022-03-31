@@ -1053,7 +1053,7 @@
             "dist": {
                 "type": "path",
                 "url": "system/packs/admin",
-                "reference": "801388ccd1b0bf09e04f129ebaf594d7ac020ae3"
+                "reference": "7bd09c0af6881e0d0cc40b739153d2dbf0417a4d"
             },
             "require": {
                 "hotash/authable": "*@dev"
@@ -1084,9 +1084,10 @@
             "dist": {
                 "type": "path",
                 "url": "system/packs/authable",
-                "reference": "5007e1baddd569bfc5f43bff7079472f1448c6fe"
+                "reference": "1e8f67fe13a32be7f8ba02262053166583ae8f74"
             },
             "require": {
+                "hotash/tenancy": "*@dev",
                 "laravel/jetstream": "^2.6"
             },
             "type": "package",
