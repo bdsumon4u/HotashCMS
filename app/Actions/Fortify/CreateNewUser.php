@@ -3,6 +3,7 @@
 namespace App\Actions\Fortify;
 
 use App\Models\Team;
+use App\Providers\RouteServiceProvider;
 use Hotash\Authable\AuthGuard;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -25,6 +26,8 @@ class CreateNewUser implements CreatesNewUsers
     public function create(array $input)
     {
         $model = AuthGuard::model();
+
+        abort_if((new $model)->disableRegistration, 403, 'You can\'t register.');
 
         Validator::make($input, [
             'name' => ['required', 'string', 'max:255'],
