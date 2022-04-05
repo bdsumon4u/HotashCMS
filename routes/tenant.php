@@ -21,18 +21,12 @@ Route::domain('admin.{domain}')->as('admin.')->group(function () {
     Route::redirect('/register', RouteServiceProvider::HOME);
 
     Route::middleware(['auth:admin', 'verified'])->group(function () {
-        Route::get('/dashboard', function () {
-            return Inertia::render('packs/admin::Dashboard');
-        })->name('dashboard');
+        Route::get('/dashboard', \Hotash\Tenancy\Controllers\Admin\DashboardController::class)->name('dashboard');
     });
 });
 
-Route::get('/', function () {
-    return 'This is your multi-tenant application. The id of the current tenant is ' . tenant('id');
-});
+Route::get('/', \Hotash\Tenancy\Controllers\HomeController::class);
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', \Hotash\Tenancy\Controllers\DashboardController::class)->name('dashboard');
 });

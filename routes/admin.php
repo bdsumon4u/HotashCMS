@@ -19,7 +19,5 @@ Route::redirect('/', RouteServiceProvider::HOME);
 Route::redirect('/register', RouteServiceProvider::HOME);
 
 Route::middleware(['auth:admin', 'verified'])->group(function () {
-    Route::get('/dashboard', function () {
-        return Inertia::render('packs/admin::Dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', \Hotash\Admin\Controllers\DashboardController::class)->name('dashboard');
 });
