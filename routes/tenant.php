@@ -2,7 +2,6 @@
 
 use App\Providers\RouteServiceProvider;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,8 +19,10 @@ Route::domain('admin.{domain}')->as('admin.')->group(function () {
     Route::redirect('/', RouteServiceProvider::HOME);
     Route::redirect('/register', RouteServiceProvider::HOME);
 
-    Route::middleware(['auth:admin', 'verified'])->group(function () {
+    Route::middleware(['auth:admin', 'verified', \Hotash\Tenancy\Middleware\IgnoreDomainParameter::class])->group(function () {
         Route::get('/dashboard', \Hotash\Tenancy\Controllers\Admin\DashboardController::class)->name('dashboard');
+        \Hotash\DataTable\InertiaTable::route(\App\Table\Tenant\Admin\BrandTable::class);
+        Route::resource('/brands', \App\Http\Controllers\Tenant\Admin\BrandController::class);
     });
 });
 
