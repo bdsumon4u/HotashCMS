@@ -23,6 +23,8 @@ Route::domain('admin.{domain}')->as('admin.')->group(function () {
         Route::get('/dashboard', \Hotash\Tenancy\Controllers\Admin\DashboardController::class)->name('dashboard');
         \Hotash\DataTable\InertiaTable::route(\App\Table\Tenant\Admin\BrandTable::class);
         Route::resource('/brands', \App\Http\Controllers\Tenant\Admin\BrandController::class);
+        \Hotash\DataTable\InertiaTable::route(\App\Table\Tenant\Admin\CategoryTable::class);
+        Route::resource('/categories', \App\Http\Controllers\Tenant\Admin\CategoryController::class);
     });
 });
 
