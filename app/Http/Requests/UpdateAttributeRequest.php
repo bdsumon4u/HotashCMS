@@ -2,9 +2,7 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
-
-class UpdateAttributeRequest extends FormRequest
+class UpdateAttributeRequest extends StoreAttributeRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,7 +11,7 @@ class UpdateAttributeRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,8 +21,6 @@ class UpdateAttributeRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            //
-        ];
+        return parent::rules();
     }
 }

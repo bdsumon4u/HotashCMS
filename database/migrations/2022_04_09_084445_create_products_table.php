@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->string('code', 192);
-            $table->string('barcode_type', 192);
+            $table->string('barcode', 192);
+            $table->string('barcode_type', 10);
             $table->string('name', 192)->unique();
             $table->string('slug', 192)->unique();
             $table->float('price', 10, 0);
@@ -26,7 +26,7 @@ return new class extends Migration
                 ->nullOnDelete();
             $table->float('net_tax', 10, 0)->nullable()->default(0);
             $table->string('tax_method', 192)->nullable()->default('1');
-            $table->text('note')->nullable();
+            $table->mediumText('note')->nullable();
             $table->float('stock_alert', 10, 0)->nullable()->default(0);
             $table->boolean('is_variant')->default(0);
             $table->boolean('is_active')->default(true);

@@ -30,4 +30,9 @@ class Brand extends Model implements HasMedia
                     ->fit('stretch', 300, 300);
             });
     }
+
+    public function searchableAs(): string
+    {
+        return config('scout.prefix').tenant('id').'_'.$this->getTable();
+    }
 }

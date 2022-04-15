@@ -15,10 +15,14 @@ return new class extends Migration
     {
         Schema::create('attributes', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 35)->unique();
-            $table->string('slug', 35)->unique();
-            $table->json('values');
+            $table->string('group', 35)->unique();
+            $table->string('name', 35);
+            $table->string('slug', 35);
+            $table->json('values')->nullable();
             $table->timestamps();
+
+            $table->unique(['group', 'name']);
+            $table->unique(['group', 'slug']);
         });
     }
 

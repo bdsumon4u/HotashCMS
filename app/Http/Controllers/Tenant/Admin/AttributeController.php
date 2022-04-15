@@ -1,10 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Tenant\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreAttributeRequest;
 use App\Http\Requests\UpdateAttributeRequest;
 use App\Models\Attribute;
+use App\Table\Tenant\Admin\AttributeTable;
+use Inertia\Inertia;
 
 class AttributeController extends Controller
 {
@@ -15,7 +18,7 @@ class AttributeController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('Admin/Attributes/Index')->table(AttributeTable::class);
     }
 
     /**
@@ -36,7 +39,9 @@ class AttributeController extends Controller
      */
     public function store(StoreAttributeRequest $request)
     {
-        //
+        Attribute::create($request->validated());
+        session()->flash('flash.banner', 'Attribute Has Been Created.');
+        return Inertia::location(action([static::class, 'index']));
     }
 
     /**
@@ -70,7 +75,9 @@ class AttributeController extends Controller
      */
     public function update(UpdateAttributeRequest $request, Attribute $attribute)
     {
-        //
+        $attribute->update($request->validated());
+        session()->flash('flash.banner', 'Attribute Has Been Updated.');
+        return Inertia::location(action([static::class, 'index']));
     }
 
     /**
@@ -81,6 +88,12 @@ class AttributeController extends Controller
      */
     public function destroy(Attribute $attribute)
     {
-        //
+        try {
+            $attribute->delete();
+            session()->flash('flash.banner', 'Attribute Has Been Deleted.');
+            return Inertia::location(action([static::class, 'index']));
+        } catch (\Exception $e) {
+            return back()->dangerBanner($e->getMessage());
+        }
     }
 }
