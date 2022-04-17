@@ -27,6 +27,8 @@ Route::domain('admin.{domain}')->as('admin.')->group(function () {
         Route::resource('/categories', \App\Http\Controllers\Tenant\Admin\CategoryController::class);
         \Hotash\DataTable\InertiaTable::route(\App\Table\Tenant\Admin\AttributeTable::class);
         Route::resource('/attributes', \App\Http\Controllers\Tenant\Admin\AttributeController::class);
+        \Hotash\DataTable\InertiaTable::route(\App\Table\Tenant\Admin\ProductTable::class);
+        Route::resource('/products', \App\Http\Controllers\Tenant\Admin\ProductController::class);
     });
 });
 

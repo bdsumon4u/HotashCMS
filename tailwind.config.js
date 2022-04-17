@@ -10,7 +10,7 @@ module.exports = {
         './resources/views/**/*.blade.php',
         './resources/js/**/*.vue',
         './system/**/**/resources/views/**/*.blade.php',
-        './system/**/**/resources/js/**/*.vue',
+        './system/**/**/*.vue',
     ],
 
     theme: {

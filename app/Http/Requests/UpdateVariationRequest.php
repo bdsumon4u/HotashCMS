@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
-class UpdateProductRequest extends StoreProductRequest
+use Illuminate\Foundation\Http\FormRequest;
+
+class UpdateVariationRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -11,7 +13,7 @@ class UpdateProductRequest extends StoreProductRequest
      */
     public function authorize()
     {
-        return true;
+        return false;
     }
 
     /**
@@ -21,8 +23,8 @@ class UpdateProductRequest extends StoreProductRequest
      */
     public function rules()
     {
-        return array_merge(parent::rules(), [
+        return [
             //
-        ]);
+        ];
     }
 }

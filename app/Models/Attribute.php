@@ -31,7 +31,7 @@ class Attribute extends Model
         return config('scout.prefix').tenant('id').'_'.$this->getTable();
     }
 
-    public function toSearchableArray()
+    public function toSearchableArray(): array
     {
         return Arr::except($this->toArray(), ['created_at', 'updated_at', 'deleted_at']);
     }

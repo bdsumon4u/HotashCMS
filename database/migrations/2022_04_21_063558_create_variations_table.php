@@ -13,14 +13,17 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('product_variation', function (Blueprint $table) {
+        Schema::create('variations', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(\App\Models\Product::class)
                 ->constrained()
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->json('attributes');
+            $table->string('name')->index();
+            $table->json('data');
             $table->timestamps();
+
+            $table->unique(['product_id', 'name']);
         });
     }
 
@@ -31,6 +34,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('product_variation');
+        Schema::dropIfExists('variations');
     }
 };
