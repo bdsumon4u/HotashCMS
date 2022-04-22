@@ -1213,6 +1213,37 @@
             }
         },
         {
+            "name": "hotash/media",
+            "version": "dev-master",
+            "dist": {
+                "type": "path",
+                "url": "system/packs/media",
+                "reference": "dd8b3053eebde2e595879c0d9fe9b34fec12394f"
+            },
+            "require": {
+                "spatie/laravel-medialibrary": "^10.0.0"
+            },
+            "type": "package",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Hotash\\Media\\Providers\\MediaServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Hotash\\Media\\": "src",
+                    "Database\\Factories\\": "database/factories",
+                    "Database\\Seeders\\": "database/seeds"
+                }
+            },
+            "description": "Media package for HotashCMS",
+            "transport-options": {
+                "relative": true
+            }
+        },
+        {
             "name": "hotash/system",
             "version": "dev-master",
             "dist": {
@@ -1223,9 +1254,9 @@
             "require": {
                 "hotash/admin": "*@dev",
                 "hotash/authable": "*@dev",
+                "hotash/media": "*@dev",
                 "hotash/tenancy": "*@dev",
-                "laravel/framework": "^9.2",
-                "spatie/laravel-medialibrary": "^10.0.0"
+                "laravel/framework": "^9.2"
             },
             "type": "project",
             "extra": {
@@ -10192,5 +10223,5 @@
         "php": "^8.0.2"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.3.0"
 }

@@ -29,6 +29,9 @@ Route::domain('admin.{domain}')->as('admin.')->group(function () {
         Route::resource('/attributes', \App\Http\Controllers\Tenant\Admin\AttributeController::class);
         \Hotash\DataTable\InertiaTable::route(\App\Table\Tenant\Admin\ProductTable::class);
         Route::resource('/products', \App\Http\Controllers\Tenant\Admin\ProductController::class);
+
+        Route::get('/media', \App\Http\Controllers\Tenant\Admin\MediaController::class)->name('media');
+//        Route::post('/media/{folder}', [\App\Http\Controllers\Tenant\Admin\MediaController::class, 'upload'])->name('media.store');
     });
 });
 
