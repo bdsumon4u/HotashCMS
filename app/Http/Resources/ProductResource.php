@@ -18,9 +18,14 @@ class ProductResource extends JsonResource
             'media' => [],
             'attributes' => $this->resource->attributes ?? [],
             'variations' => $this->resource->variations
-                ->mapWithKeys(fn ($item, $key) => [
-                    $item->name => $item->data
-                ]),
+                ->mapWithKeys(function ($item, $key) {
+                    return [$item->name => array_merge($item->data->toArray(), [
+                        'images' => $item->media->map(fn ($media) => [
+                            'id' => $media->getKey(),
+                            'src' => $media->original_url,
+                        ])->toArray(),
+                    ])];
+                }),
         ]);
     }
 }

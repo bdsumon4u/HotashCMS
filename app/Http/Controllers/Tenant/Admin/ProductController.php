@@ -13,6 +13,7 @@ use App\Models\Product;
 use App\Table\Tenant\Admin\ProductTable;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class ProductController extends Controller
@@ -53,16 +54,32 @@ class ProductController extends Controller
     {
         $product = Product::create($data = $request->validated());
 
+        $images = [];
+        DB::beginTransaction();
+
         $variations = collect(data_get($data, 'variations'))
-            ->map(function ($variation) use ($product) {
+            ->map(function ($variation) use (&$product, &$images) {
+                $name = $variation['name'];
+                if ($arr = data_get($variation, 'images', [])) {
+                    $images[$name] = $arr;
+                }
+                $data = json_encode(Arr::except($variation, 'images'));
                 return [
-                    'product_id' => $product->getKey(),
-                    'name' => $variation['name'],
-                    'data' => json_encode($variation),
-                ];
+                        'product_id' => $product->getKey(),
+                    ] + compact('name', 'data');
             })->toArray();
 
         $product->variations()->upsert($variations, ['name']);
+
+        foreach ($images as $name => $arr) {
+            foreach ($arr as $item) {
+                $product->variations()->where(compact('name'))
+                    ->firstOrFail()->addMediaFromUrl($item['src'])
+                    ->toMediaCollection();
+            }
+        }
+
+        DB::commit();
 
         return redirect()->action([static::class, 'index'])->banner('Product Has Been Created.');
     }
@@ -86,6 +103,8 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
+        $product->load('variations.media');
+//        dd($product);
         return Inertia::render('Admin/Products/Editor', [
             'product' => new ProductResource($product),
             'brands' => $this->selectable(Brand::class),
@@ -107,16 +126,32 @@ class ProductController extends Controller
     {
         $product->update($data = $request->validated());
 
+        $images = [];
+        DB::beginTransaction();
+
         $variations = collect(data_get($data, 'variations'))
-            ->map(function ($variation) use ($product) {
+            ->map(function ($variation) use (&$product, &$images) {
+                $name = $variation['name'];
+                if ($arr = data_get($variation, 'images', [])) {
+                    $images[$name] = $arr;
+                }
+                $data = json_encode(Arr::except($variation, 'images'));
                 return [
                     'product_id' => $product->getKey(),
-                    'name' => $variation['name'],
-                    'data' => json_encode($variation),
-                ];
+                ] + compact('name', 'data');
             })->toArray();
 
         $product->variations()->upsert($variations, ['name']);
+
+        foreach ($images as $name => $arr) {
+            foreach ($arr as $item) {
+                $product->variations()->where(compact('name'))
+                    ->firstOrFail()->addMediaFromUrl($item['src'])
+                    ->toMediaCollection();
+            }
+        }
+
+        DB::commit();
 
         return redirect()->action([static::class, 'index'])->banner('Product Has Been Updated.');
     }

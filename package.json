@@ -27,6 +27,7 @@
         "filepond-plugin-image-preview": "^4.6.11",
         "filepond-plugin-image-resize": "^2.0.10",
         "filepond-plugin-image-transform": "^3.8.7",
+        "imagekit-media-library-widget": "^1.0.2",
         "laravel-mix": "^6.0.6",
         "lodash": "^4.17.19",
         "postcss": "^8.1.14",
