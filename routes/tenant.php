@@ -32,6 +32,7 @@ Route::domain('admin.{domain}')->as('admin.')->group(function () {
 
         Route::get('/media', \App\Http\Controllers\Tenant\Admin\MediaController::class)->name('media');
 //        Route::post('/media/{folder}', [\App\Http\Controllers\Tenant\Admin\MediaController::class, 'upload'])->name('media.store');
+        Route::get('pos', \App\Http\Controllers\Tenant\Admin\PosController::class)->name('pos');
     });
 });
 
