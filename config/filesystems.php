@@ -30,6 +30,11 @@ return [
 
     'disks' => [
 
+        'imagekit' => [
+            'driver' => 'imagekit',
+            'root' => env('IMAGEKIT_ROOT_FOLDER'),
+        ],
+
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app'),

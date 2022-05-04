@@ -73,9 +73,10 @@ class ProductController extends Controller
 
         foreach ($images as $name => $arr) {
             foreach ($arr as $item) {
+                if (data_get($item, 'id')) continue;
                 $product->variations()->where(compact('name'))
                     ->firstOrFail()->addMediaFromUrl($item['src'])
-                    ->toMediaCollection();
+                    ->toMediaCollection('default', 'imagekit');
             }
         }
 
@@ -104,7 +105,6 @@ class ProductController extends Controller
     public function edit(Product $product)
     {
         $product->load('variations.media');
-//        dd($product);
         return Inertia::render('Admin/Products/Editor', [
             'product' => new ProductResource($product),
             'brands' => $this->selectable(Brand::class),
@@ -145,9 +145,10 @@ class ProductController extends Controller
 
         foreach ($images as $name => $arr) {
             foreach ($arr as $item) {
+                if (data_get($item, 'id')) continue;
                 $product->variations()->where(compact('name'))
                     ->firstOrFail()->addMediaFromUrl($item['src'])
-                    ->toMediaCollection();
+                    ->toMediaCollection('default', 'imagekit');
             }
         }
 
