@@ -15,7 +15,7 @@ class ProductResource extends JsonResource
     public function toArray($request)
     {
         return array_merge(parent::toArray($request), [
-            'media' => [],
+            'images' => [],
             'attributes' => $this->resource->attributes ?? [],
             'variations' => $this->resource->variations
                 ->mapWithKeys(function ($item, $key) {
