@@ -323,7 +323,9 @@ class ImagekitAdapter implements FilesystemAdapter
 
     public function getUrl(string $path): string
     {
-        return $this->searchFile($path, true)->url;
+        return $this->client->url([
+            'path' => $this->applyPathPrefix($path),
+        ]);
     }
 
     /**
