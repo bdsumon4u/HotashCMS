@@ -38,6 +38,7 @@ class HandleInertiaRequests extends Middleware
     {
         return array_merge(parent::share($request), [
             'price_figure' => 'decimal',
+            'default_currency' => 'BDT',
         ]);
     }
 }

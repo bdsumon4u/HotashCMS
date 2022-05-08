@@ -25,30 +25,7 @@ class StoreProductRequest extends FormRequest
      */
     public function rules()
     {
-        $rules = array_merge($this->hasVariation() ? Arr::dot([
-            'variations.*' => [
-                'sku' => 'required_if:variations.*.enabled,true|max:25|unique:products',
-                'barcode' => 'required_if:variations.*.enabled,true|max:25|unique:products|unique:variations',
-                'regular_price' => 'required_if:variations.*.enabled,true|numeric|min:0',
-                'discount_amount' => 'required_if:variations.*.enabled,true|numeric|min:0',
-                'discount_type' => 'required_if:variations.*.enabled,true|in:fixed,percent',
-                'sale_price' => 'required_if:variations.*.enabled,true|numeric|min:0',
-                'schedule' => 'sometimes|boolean',
-                'sale_start_date' => 'nullable|date',
-                'sale_end_date' => 'nullable|date',
-                'images' => 'nullable|array',
-            ],
-        ]) : [
-            'sku' => ['required', 'max:25'],
-            'barcode' => ['required', 'max:25'],
-            'regular_price' => ['required', 'numeric'],
-            'discount_amount' => ['required', 'numeric'],
-            'discount_type' => ['required', Rule::in(['fixed', 'percent'])],
-            'sale_price' => ['required', 'numeric'],
-            'schedule' => ['required', 'boolean'],
-            'sale_start_date' => ['nullable', 'date'],
-            'sale_end_date' => ['nullable', 'date'],
-        ], [
+        return array_merge($this->variableRules(), [
             'images' => 'required|array',
             'name' => 'required|max:192',
             'slug' => 'required|max:192',
@@ -59,8 +36,6 @@ class StoreProductRequest extends FormRequest
             'attributes' => 'nullable|array',
             'variations' => 'nullable|array',
         ]);
-//        dd($rules);
-        return $rules;
     }
 
     public function messages()
@@ -98,8 +73,38 @@ class StoreProductRequest extends FormRequest
         ]);
     }
 
-    private function hasVariation(): bool
+    private function variableRules(): array
     {
-        return $this->collect('variations')->isNotEmpty();
+        if ($this->hasVariation()) {
+            return [
+                'sku' => ['required', 'max:25'],
+                'barcode' => ['required', 'max:25'],
+                'regular_price' => ['required', 'numeric'],
+                'discount_amount' => ['required', 'numeric'],
+                'discount_type' => ['required', Rule::in(['fixed', 'percent'])],
+                'sale_price' => ['required', 'numeric'],
+                'schedule' => ['required', 'boolean'],
+                'sale_start_date' => ['nullable', 'date'],
+                'sale_end_date' => ['nullable', 'date'],
+            ];
+        }
+
+        return [
+            'variations.*.sku' => ['required_if:variations.*.enabled,true', 'max:25', 'unique:products'],
+            'variations.*.barcode' => ['required_if:variations.*.enabled,true', 'max:25', 'unique:products', 'unique:variations'],
+            'variations.*.regular_price' => ['required_if:variations.*.enabled,true', 'numeric', 'min:0'],
+            'variations.*.discount_amount' => ['required_if:variations.*.enabled,true', 'numeric', 'min:0'],
+            'variations.*.discount_type' => ['required_if:variations.*.enabled,true', Rule::in(['fixed', 'percent'])],
+            'variations.*.sale_price' => ['required_if:variations.*.enabled,true', 'numeric', 'min:0'],
+            'variations.*.schedule' => ['sometimes', 'boolean'],
+            'variations.*.sale_start_date' => ['nullable', 'date'],
+            'variations.*.sale_end_date' => ['nullable', 'date'],
+            'variations.*.images' => ['nullable', 'array'],
+        ];
+    }
+
+    protected function hasVariation(): bool
+    {
+        return $this->collect('variations')->isEmpty();
     }
 }
