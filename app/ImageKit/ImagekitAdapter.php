@@ -2,9 +2,11 @@
 
 namespace App\ImageKit;
 
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use ImageKit\ImageKit;
 use League\Flysystem\Config;
+use League\Flysystem\DirectoryAttributes;
 use League\Flysystem\FileAttributes;
 use League\Flysystem\FilesystemAdapter;
 use League\Flysystem\PathPrefixer;
@@ -228,7 +230,9 @@ class ImagekitAdapter implements FilesystemAdapter
      */
     public function listContents(string $path = '', bool $deep = false): iterable
     {
-        foreach ($this->iterateFolderContents($path, $deep) as $entry) {
+        $location = $this->applyPathPrefix($path);
+
+        foreach ($this->iterateFolderContents($location, $deep) as $entry) {
             $storageAttrs = $this->normalizeResponse($entry);
 
             // Avoid including the base directory itself
@@ -242,43 +246,38 @@ class ImagekitAdapter implements FilesystemAdapter
 
     protected function iterateFolderContents(string $path = '', bool $deep = false): \Generator
     {
-        $location = $this->applyPathPrefix($path);
-
         try {
-            $result = $this->client->listFolder($location, $deep);
+            $result = $this->client->listFiles([
+                'includeFolder' => true,
+                'path' => $path,
+            ]);
         } catch (\Exception $e) {
             return;
         }
 
-        yield from $result['entries'];
+        yield from $data = collect($result->success)->map(fn ($item) => (array)$item);
 
-        while ($result['has_more']) {
-            $result = $this->client->listFolderContinue($result['cursor']);
-            yield from $result['entries'];
+        if (!$deep) return;
+
+        foreach ($data->filter(fn ($item) => ($item['type'] === 'folder')) as $folder) {
+            foreach ($this->iterateFolderContents($folder['folderPath'], true) as $content) {
+                yield $content;
+            }
         }
     }
 
     protected function normalizeResponse(array $response): StorageAttributes
     {
-        $timestamp = (isset($response['server_modified'])) ? strtotime($response['server_modified']) : null;
+        $normalizedPath = ltrim($response[$response['type'].'Path'], '/');
 
-        if ($response['.tag'] === 'folder') {
-            $normalizedPath = ltrim($this->prefixer->stripDirectoryPrefix($response['path_display']), '/');
-
-            return new DirectoryAttributes(
-                $normalizedPath,
-                null,
-                $timestamp
+        if ($response['type'] === 'folder') {
+            return new DirectoryAttributes($normalizedPath, null,
+                strtotime($response['updatedAt'])
             );
         }
 
-        $normalizedPath = ltrim($this->prefixer->stripPrefix($response['path_display']), '/');
-
-        return new FileAttributes(
-            $normalizedPath,
-            $response['size'] ?? null,
-            null,
-            $timestamp,
+        return new FileAttributes($normalizedPath, $response['size'] ?? null, null,
+            strtotime($response['updatedAt']),
             $this->mimeTypeDetector->detectMimeTypeFromPath($normalizedPath)
         );
     }
