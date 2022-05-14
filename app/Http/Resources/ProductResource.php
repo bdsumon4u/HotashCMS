@@ -15,16 +15,10 @@ class ProductResource extends JsonResource
     public function toArray($request)
     {
         return array_merge(parent::toArray($request), [
-            'images' => [],
             'attributes' => $this->resource->attributes ?? [],
             'variations' => $this->resource->variations
                 ->mapWithKeys(function ($item, $key) {
-                    return [$item->name => array_merge($item->data->toArray(), [
-                        'images' => $item->media->map(fn ($media) => [
-                            'id' => $media->getKey(),
-                            'src' => $media->original_url,
-                        ])->toArray(),
-                    ])];
+                    return [$item->name => $item->toArray()];
                 }),
         ]);
     }

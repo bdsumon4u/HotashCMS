@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Validation\Rule;
+
 class UpdateProductRequest extends StoreProductRequest
 {
     /**
@@ -9,7 +11,7 @@ class UpdateProductRequest extends StoreProductRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -19,10 +21,24 @@ class UpdateProductRequest extends StoreProductRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
-        return array_merge(parent::rules(), [
-            //
+        return parent::rules();
+    }
+
+    protected function variableRules(): array
+    {
+        $product = $this->route('product');
+
+        $commons = ['max:25', Rule::unique('products')->ignore($product), Rule::unique('variations')->whereNot('product_id', $product->id)];
+
+        return array_merge(parent::variableRules(), parent::variationLess() ? [
+            'sku' => ['required', ...$commons],
+            'barcode' => ['required', ...$commons],
+        ]: [
+            'variations.*.sku' => ['required_if:variations.*.enabled,true', /*'distinct',*/ ...$commons],
+            'variations.*.barcode' => ['required_if:variations.*.enabled,true', /*'distinct',*/ ...$commons],
         ]);
     }
 }
+

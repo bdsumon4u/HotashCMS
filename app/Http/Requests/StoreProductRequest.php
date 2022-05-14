@@ -13,7 +13,7 @@ class StoreProductRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -23,10 +23,10 @@ class StoreProductRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return array_merge($this->variableRules(), [
-            'images' => 'required|array',
+            'media' => 'required|array',
             'name' => 'required|max:192',
             'slug' => 'required|max:192',
             'description' => 'required',
@@ -38,44 +38,25 @@ class StoreProductRequest extends FormRequest
         ]);
     }
 
-    public function messages()
+    public function messages(): array
     {
         return Arr::dot([
-            'brand_id' => [
-                'required' => 'The brand field is required.',
-                'integer' => 'The brand id must be an integer.',
-            ],
             'variations.*' => [
-                'sku' => [
-                    'required_if' => 'This field is required.',
-                    'max' => 'This field must not be greater than :max.',
-                    'unique' => 'This value has already been taken.',
-                ],
-                'barcode' => [
-                    'required_if' => 'This field is required.',
-                    'max' => 'This field must not be greater than :max.',
-                    'unique' => 'This value has already been taken.',
-                ],
-                'regular_price' => [
-                    'required_if' => 'This field is required.',
-                    'numeric' => 'This field must be a number.',
-                    'min' => 'This field must not be smaller than :min.',
-                ],
-                'discount_amount' => [
+                '*' => [
                     'required_if' => 'This field is required.',
                     'numeric' => 'This field must be an integer.',
                     'min' => 'This field must not be smaller than :min.',
-                ],
-                'discount_type' => [
-                    'required_if' => 'This field is required.',
+                    'max' => 'This field must not be greater than :max.',
+                    'distinct' => 'The field has a duplicate value.',
+                    'unique' => 'This value has already been taken.',
                 ],
             ],
         ]);
     }
 
-    private function variableRules(): array
+    protected function variableRules(): array
     {
-        if ($this->hasVariation()) {
+        if ($this->variationLess()) {
             return [
                 'sku' => ['required', 'max:25'],
                 'barcode' => ['required', 'max:25'],
@@ -90,20 +71,22 @@ class StoreProductRequest extends FormRequest
         }
 
         return [
-            'variations.*.sku' => ['required_if:variations.*.enabled,true', 'max:25', 'unique:products'],
-            'variations.*.barcode' => ['required_if:variations.*.enabled,true', 'max:25', 'unique:products', 'unique:variations'],
+            'variations.*.enabled' => ['sometimes', 'boolean'],
+            'variations.*.type' => ['required_if:variations.*.enabled,true', Rule::in(['standard', 'digital', 'service'])],
+            'variations.*.sku' => ['required_if:variations.*.enabled,true', 'max:25', /*'distinct',*/ 'unique:products', 'unique:variations'],
+            'variations.*.barcode' => ['required_if:variations.*.enabled,true', 'max:25', /*'distinct',*/ 'unique:products', 'unique:variations'],
             'variations.*.regular_price' => ['required_if:variations.*.enabled,true', 'numeric', 'min:0'],
             'variations.*.discount_amount' => ['required_if:variations.*.enabled,true', 'numeric', 'min:0'],
-            'variations.*.discount_type' => ['required_if:variations.*.enabled,true', Rule::in(['fixed', 'percent'])],
+            'variations.*.discount_type' => ['required_if:variations.*.enabled,true', Rule::in(['flat', 'percent'])],
             'variations.*.sale_price' => ['required_if:variations.*.enabled,true', 'numeric', 'min:0'],
             'variations.*.schedule' => ['sometimes', 'boolean'],
             'variations.*.sale_start_date' => ['nullable', 'date'],
             'variations.*.sale_end_date' => ['nullable', 'date'],
-            'variations.*.images' => ['nullable', 'array'],
+            'variations.*.media' => ['nullable', 'array'],
         ];
     }
 
-    protected function hasVariation(): bool
+    protected function variationLess(): bool
     {
         return $this->collect('variations')->isEmpty();
     }

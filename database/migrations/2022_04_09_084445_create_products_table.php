@@ -19,18 +19,22 @@ return new class extends Migration
                 ->nullable()
                 ->constrained()
                 ->nullOnDelete();
+            $table->string('type');
             $table->string('name', 192)->unique();
             $table->string('slug', 192)->unique();
             $table->string('sku', 25)->nullable()->unique();
             $table->string('barcode', 192)->nullable()->unique();
-            $table->decimal('regular_price');
-            $table->decimal('discount_amount');
-            $table->enum('discount_type', ['fixed', 'percent']);
-            $table->decimal('sale_price');
 
+            $table->decimal('regular_price')->default(0);
+            $table->decimal('discount_amount')->default(0);
+            $table->enum('discount_type', ['flat', 'percent']);
+            $table->decimal('sale_price')->default(0);
+
+            $table->longText('description');
             $table->json('attributes')->nullable();
             $table->mediumText('note')->nullable();
-            $table->boolean('is_active')->default(true);
+
+            $table->boolean('enabled')->default(true);
             $table->boolean('schedule')->default(false);
             $table->timestamp('sale_start_date')->nullable();
             $table->timestamp('sale_end_date')->nullable();

@@ -19,17 +19,23 @@ return new class extends Migration
                 ->constrained()
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
+            $table->string('type');
             $table->string('name')->index();
             $table->string('sku', 25)->index();
             $table->string('barcode', 192)->nullable();
+
             $table->decimal('regular_price');
             $table->decimal('discount_amount');
-            $table->enum('discount_type', ['fixed', 'percent']);
+            $table->enum('discount_type', ['flat', 'percent']);
             $table->decimal('sale_price');
+
+            $table->mediumText('note')->nullable();
+
             $table->boolean('enabled')->default(false);
             $table->boolean('schedule')->default(false);
             $table->timestamp('sale_start_date')->nullable();
             $table->timestamp('sale_end_date')->nullable();
+
             $table->timestamps();
             $table->softDeletes();
 

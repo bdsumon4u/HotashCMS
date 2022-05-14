@@ -10,11 +10,16 @@ use App\Models\Attribute;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Variation;
 use App\Table\Tenant\Admin\ProductTable;
+use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use Spatie\MediaLibrary\MediaCollections\Exceptions\FileCannotBeAdded;
+use Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist;
+use Spatie\MediaLibrary\MediaCollections\Exceptions\FileIsTooBig;
 
 class ProductController extends Controller
 {
@@ -52,35 +57,16 @@ class ProductController extends Controller
      */
     public function store(StoreProductRequest $request)
     {
-        $product = Product::create($data = $request->validated());
+        /** @var Brand $brand */
+        $brand = Brand::query()->findOrFail($request->get('brand_id'));
 
-        $images = [];
-        DB::beginTransaction();
+        /** @var Product $product */
+        $product = $brand->products()->create($data = $request->validated());
 
-        $variations = collect(data_get($data, 'variations'))
-            ->map(function ($variation) use (&$product, &$images) {
-                $name = $variation['name'];
-                if ($arr = data_get($variation, 'images', [])) {
-                    $images[$name] = $arr;
-                }
-                $data = json_encode(Arr::except($variation, 'images'));
-                return [
-                        'product_id' => $product->getKey(),
-                    ] + compact('name', 'data');
-            })->toArray();
-
-        $product->variations()->upsert($variations, ['name']);
-
-        foreach ($images as $name => $arr) {
-            foreach ($arr as $item) {
-                if (data_get($item, 'id')) continue;
-                $product->variations()->where(compact('name'))
-                    ->firstOrFail()->addMediaFromUrl($item['src'])
-                    ->toMediaCollection('default', 'imagekit');
-            }
+        try {
+            $this->syncRelations($product, $data);
+        } catch (FileDoesNotExist|FileIsTooBig|FileCannotBeAdded $e) {
         }
-
-        DB::commit();
 
         return redirect()->action([static::class, 'index'])->banner('Product Has Been Created.');
     }
@@ -104,7 +90,7 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        $product->load('variations.media');
+        $product->load(['media', 'variations.media']);
         return Inertia::render('Admin/Products/Editor', [
             'product' => new ProductResource($product),
             'brands' => $this->selectable(Brand::class),
@@ -126,33 +112,10 @@ class ProductController extends Controller
     {
         $product->update($data = $request->validated());
 
-        $images = [];
-        DB::beginTransaction();
-
-        $variations = collect(data_get($data, 'variations'))
-            ->map(function ($variation) use (&$product, &$images) {
-                $name = $variation['name'];
-                if ($arr = data_get($variation, 'images', [])) {
-                    $images[$name] = $arr;
-                }
-                $data = json_encode(Arr::except($variation, 'images'));
-                return [
-                    'product_id' => $product->getKey(),
-                ] + compact('name', 'data');
-            })->toArray();
-
-        $product->variations()->upsert($variations, ['name']);
-
-        foreach ($images as $name => $arr) {
-            foreach ($arr as $item) {
-                if (data_get($item, 'id')) continue;
-                $product->variations()->where(compact('name'))
-                    ->firstOrFail()->addMediaFromUrl($item['src'])
-                    ->toMediaCollection('default', 'imagekit');
-            }
+        try {
+            $this->syncRelations($product, $data);
+        } catch (FileDoesNotExist|FileIsTooBig|FileCannotBeAdded $e) {
         }
-
-        DB::commit();
 
         return redirect()->action([static::class, 'index'])->banner('Product Has Been Updated.');
     }
@@ -160,10 +123,10 @@ class ProductController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Product  $product
-     * @return \Illuminate\Http\Response
+     * @param Product $product
+     * @return Response
      */
-    public function destroy(Product $product)
+    public function destroy(Product $product): Response
     {
         //
     }
@@ -174,11 +137,43 @@ class ProductController extends Controller
      * @param string $model
      * @return array
      */
-    private function selectable(string $model)
+    private function selectable(string $model): array
     {
         return $model::select('id', 'name')
             ->orderBy('name')
             ->get()
             ->toArray();
+    }
+
+    /**
+     * @throws FileCannotBeAdded
+     * @throws FileIsTooBig
+     * @throws FileDoesNotExist
+     */
+    private function syncRelations(Product $product, array $data)
+    {
+        foreach ($data['media'] as $item) {
+            if (data_get($item, 'id')) continue;
+            $product->addMediaFromUrl($item['src'])
+                ->toMediaCollection('default', 'imagekit');
+        }
+
+        DB::beginTransaction();
+        collect(data_get($data, 'variations'))
+            ->each(function ($data, $name) use (&$product) {
+                /** @var Variation $variation */
+                $variation = $product->variations()
+                    ->updateOrCreate(
+                        compact('name'),
+                        Arr::except($data, 'media')
+                    );
+
+                foreach (data_get($data, 'media', []) as $item) {
+                    if (data_get($item, 'id')) continue;
+                    $variation->addMediaFromUrl($item['src'])
+                        ->toMediaCollection('default', 'imagekit');
+                }
+            });
+        DB::commit();
     }
 }

@@ -17,16 +17,28 @@ class Product extends Model implements HasMedia
     use InteractsWithMedia;
     use Searchable;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var string[]
+     */
     protected $fillable = [
-        'name', 'slug', 'sku', 'barcode', 'brand_id',
-        'regular_price', 'sale_price', 'schedule',
-        'sale_start_date', 'sale_end_date',
-        'net_tax', 'tax_method', 'note',
-        'attributes', 'has_variation',
-        'is_active',
+        'name', 'slug', 'sku', 'barcode', 'description',
+        'type', 'regular_price', 'discount_amount', 'discount_type',
+        'sale_price', 'schedule', 'sale_start_date', 'sale_end_date',
+        'attributes', 'has_variation', 'is_active',
     ];
 
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
     protected $casts = [
+        'enabled' => 'boolean',
+        'schedule' => 'boolean',
+        'sale_start_date' => 'datetime',
+        'sale_end_date' => 'datetime',
         'attributes' => AsArrayObject::class,
     ];
 
