@@ -3,12 +3,9 @@
 namespace App\Providers;
 
 use App\ImageKit\ImagekitAdapter;
-use Hotash\Authable\AuthGuard;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Str;
 use ImageKit\ImageKit;
 use League\Flysystem\Filesystem;
 

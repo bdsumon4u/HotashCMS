@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('team_invitations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('team_id')->constrained()->cascadeOnDelete();
+            $table->foreignIdX('team_id')->constrained()->cascadeOnDelete();
             $table->string('email');
             $table->string('role')->nullable();
             $table->timestamps();

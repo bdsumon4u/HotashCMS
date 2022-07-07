@@ -15,11 +15,11 @@ return new class extends Migration
     {
         Schema::create('purchases', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(\App\Models\Branch::class)
+            $table->foreignIdForX(\App\Models\Branch::class)
                 ->constrained()
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->foreignIdFor(\App\Models\Supplier::class)
+            $table->foreignIdForX(\App\Models\Supplier::class)
                 ->constrained()
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();

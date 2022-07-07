@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(\App\Models\Brand::class)
+            $table->foreignIdForX(\App\Models\Brand::class)
                 ->nullable()
                 ->constrained()
                 ->nullOnDelete();

@@ -15,11 +15,11 @@ return new class extends Migration
     {
         Schema::create('product_purchase', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(\App\Models\Product::class)
+            $table->foreignIdForX(\App\Models\Product::class)
                 ->constrained()
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->foreignIdFor(\App\Models\Purchase::class)
+            $table->foreignIdForX(\App\Models\Purchase::class)
                 ->constrained()
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();

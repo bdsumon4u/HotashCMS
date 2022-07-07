@@ -15,12 +15,12 @@ return new class extends Migration
     {
         Schema::create('stocks', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(\App\Models\Branch::class)
+            $table->foreignIdForX(\App\Models\Branch::class)
                 ->constrained()
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->morphs('saleable');
-            $table->foreignIdFor(\App\Models\Product::class)
+            $table->foreignIdForX(\App\Models\Product::class)
                 ->constrained()
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
