@@ -30,6 +30,13 @@ Route::domain('admin.{domain}')->as('admin.')->group(function () {
         \Hotash\DataTable\InertiaTable::route(\App\Table\Tenant\Admin\ProductTable::class);
         Route::resource('/products', \App\Http\Controllers\Tenant\Admin\ProductController::class);
 
+        Route::resource('/branches', \App\Http\Controllers\Tenant\Admin\BranchController::class);
+        Route::resource('/suppliers', \App\Http\Controllers\Tenant\Admin\SupplierController::class);
+
+        \Hotash\DataTable\InertiaTable::route(\App\Table\Tenant\Admin\PurchaseTable::class);
+        Route::get('/purchases/products', [\App\Http\Controllers\Tenant\Admin\PurchaseController::class, 'products'])->name('purchases.products');
+        Route::resource('/purchases', \App\Http\Controllers\Tenant\Admin\PurchaseController::class);
+
         Route::get('/media', \App\Http\Controllers\Tenant\Admin\MediaController::class)->name('media');
 //        Route::post('/media/{folder}', [\App\Http\Controllers\Tenant\Admin\MediaController::class, 'upload'])->name('media.store');
         Route::get('pos', \App\Http\Controllers\Tenant\Admin\PosController::class)->name('pos');

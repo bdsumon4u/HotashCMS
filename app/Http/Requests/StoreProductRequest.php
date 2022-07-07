@@ -38,6 +38,13 @@ class StoreProductRequest extends FormRequest
         ]);
     }
 
+    public function attributes()
+    {
+        return [
+            'brand_id' => 'brand',
+        ];
+    }
+
     public function messages(): array
     {
         return Arr::dot([

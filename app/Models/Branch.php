@@ -5,42 +5,46 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Arr;
 use Laravel\Scout\Searchable;
-use Spatie\MediaLibrary\HasMedia;
-use Spatie\MediaLibrary\InteractsWithMedia;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class Brand extends Model implements HasMedia
+class Branch extends Model
 {
     use HasFactory;
-    use InteractsWithMedia;
     use Searchable;
+    use SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
      *
      * @var string[]
      */
-    protected $fillable = ['name', 'slug'];
+    protected $fillable = [
+        'name', 'country', 'email', 'phone',
+        'city', 'zip_code', 'address',
+    ];
 
-    public function registerMediaCollections(): void
+    public function purchases(): HasMany
     {
-        $this
-            ->addMediaCollection('image')
-            ->singleFile()
-            ->useFallbackUrl('/storage/fallback-image.png')
-            ->registerMediaConversions(function (Media $media) {
-                $this->addMediaConversion('thumb')
-                    ->fit('stretch', 100, 100);
-                $this->addMediaConversion('preview')
-                    ->fit('stretch', 300, 300);
-            });
+        return $this->hasMany(Purchase::class);
     }
 
     public function products(): HasMany
     {
         return $this->hasMany(Product::class);
+    }
+
+    public function stocks(): HasMany
+    {
+        return $this->hasMany(Stock::class);
+    }
+
+    public function stock($product): HasOne
+    {
+        $id = $product instanceof Model ? $product->getKey() : $product;
+        return $this->hasOne(Stock::class)->where('product_id', $id);
     }
 
     public function searchableAs(): string

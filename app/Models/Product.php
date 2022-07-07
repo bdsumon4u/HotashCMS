@@ -5,8 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Arr;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Laravel\Scout\Searchable;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -42,6 +44,32 @@ class Product extends Model implements HasMedia
         'attributes' => AsArrayObject::class,
     ];
 
+    public function branches(): HasMany
+    {
+        return $this->hasMany(Branch::class);
+    }
+
+    public function purchases(): BelongsToMany
+    {
+        return $this->belongsToMany(Purchase::class);
+    }
+
+    public function stocks(): MorphMany
+    {
+        return $this->morphMany(Stock::class, 'saleable');
+    }
+
+    public function stock($branch): MorphOne
+    {
+        $id = $branch instanceof Model ? $branch->getKey() : $branch;
+        return $this->morphOne(Stock::class, 'saleable')->where('branch_id', $id);
+    }
+
+    public function variations(): HasMany
+    {
+        return $this->hasMany(Variation::class);
+    }
+
     public function searchableAs(): string
     {
         return config('scout.prefix').tenant('id').'_'.$this->getTable();
@@ -49,11 +77,9 @@ class Product extends Model implements HasMedia
 
     public function toSearchableArray(): array
     {
-        return Arr::except($this->toArray(), ['created_at', 'updated_at', 'deleted_at']);
-    }
-
-    public function variations(): HasMany
-    {
-        return $this->hasMany(Variation::class);
+        return $this->only([
+            'name', 'slug', 'sku', 'barcode',
+            'description', 'type', 'attributes',
+        ]);
     }
 }

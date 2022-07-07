@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
+use Illuminate\Support\Arr;
 use Laravel\Scout\Searchable;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -35,4 +38,27 @@ class Variation extends Model implements HasMedia
         'sale_start_date' => 'datetime',
         'sale_end_date' => 'datetime',
     ];
+
+    public function stocks(): MorphMany
+    {
+        return $this->morphMany(Stock::class, 'saleable');
+    }
+
+    public function stock($branch): MorphOne
+    {
+        $id = $branch instanceof Model ? $branch->getKey() : $branch;
+        return $this->morphOne(Stock::class, 'saleable')->where('branch_id', $id);
+    }
+
+    public function searchableAs(): string
+    {
+        return config('scout.prefix').tenant('id').'_'.$this->getTable();
+    }
+
+    public function toSearchableArray(): array
+    {
+        return $this->only([
+            'type', 'name', 'sku', 'barcode',
+        ]);
+    }
 }
