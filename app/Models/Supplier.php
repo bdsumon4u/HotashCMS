@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
+use App\Traits\Searchable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Arr;
-use Laravel\Scout\Searchable;
 
 class Supplier extends Model
 {
@@ -25,11 +25,6 @@ class Supplier extends Model
     public function purchases(): HasMany
     {
         return $this->hasMany(Purchase::class);
-    }
-
-    public function searchableAs(): string
-    {
-        return config('scout.prefix').tenant('id').'_'.$this->getTable();
     }
 
     public function toSearchableArray(): array

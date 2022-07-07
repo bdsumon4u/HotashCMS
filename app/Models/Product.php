@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\Searchable;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -9,7 +10,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
-use Laravel\Scout\Searchable;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
@@ -25,10 +25,10 @@ class Product extends Model implements HasMedia
      * @var string[]
      */
     protected $fillable = [
-        'name', 'slug', 'sku', 'barcode', 'description',
-        'type', 'regular_price', 'discount_amount', 'discount_type',
-        'sale_price', 'schedule', 'sale_start_date', 'sale_end_date',
-        'attributes', 'has_variation', 'is_active',
+        'type', 'name', 'slug', 'sku', 'barcode',
+        'regular_price', 'discount_amount', 'discount_type', 'sale_price',
+        'enabled', 'scheduled', 'sale_start_date', 'sale_end_date',
+        'description', 'attributes',
     ];
 
     /**
@@ -38,7 +38,7 @@ class Product extends Model implements HasMedia
      */
     protected $casts = [
         'enabled' => 'boolean',
-        'schedule' => 'boolean',
+        'scheduled' => 'boolean',
         'sale_start_date' => 'datetime',
         'sale_end_date' => 'datetime',
         'attributes' => AsArrayObject::class,
@@ -67,19 +67,14 @@ class Product extends Model implements HasMedia
 
     public function variations(): HasMany
     {
-        return $this->hasMany(Variation::class);
-    }
-
-    public function searchableAs(): string
-    {
-        return config('scout.prefix').tenant('id').'_'.$this->getTable();
+        return $this->hasMany(Product::class, 'parent_id');
     }
 
     public function toSearchableArray(): array
     {
         return $this->only([
-            'name', 'slug', 'sku', 'barcode',
-            'description', 'type', 'attributes',
+            'type', 'name', 'slug', 'sku', 'barcode',
+            'description', 'attributes',
         ]);
     }
 }

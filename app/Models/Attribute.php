@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
+use App\Traits\Searchable;
 use Illuminate\Database\Eloquent\Casts\Attribute as AttributeCast;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Laravel\Scout\Searchable;
 
 class Attribute extends Model
 {
@@ -24,11 +24,6 @@ class Attribute extends Model
                 ->transform(fn ($item) => trim($item))
                 ->sort()->values()->toJson(),
         );
-    }
-
-    public function searchableAs(): string
-    {
-        return config('scout.prefix').tenant('id').'_'.$this->getTable();
     }
 
     public function toSearchableArray(): array

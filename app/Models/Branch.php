@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\Searchable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Arr;
-use Laravel\Scout\Searchable;
 
 class Branch extends Model
 {
@@ -45,11 +45,6 @@ class Branch extends Model
     {
         $id = $product instanceof Model ? $product->getKey() : $product;
         return $this->hasOne(Stock::class)->where('product_id', $id);
-    }
-
-    public function searchableAs(): string
-    {
-        return config('scout.prefix').tenant('id').'_'.$this->getTable();
     }
 
     public function toSearchableArray(): array

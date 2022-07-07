@@ -15,6 +15,11 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
+            $table->foreignIdX('parent_id')
+                ->nullable()
+                ->constrained($table->getTable())
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
             $table->foreignIdForX(\App\Models\Brand::class)
                 ->nullable()
                 ->constrained()
@@ -30,17 +35,18 @@ return new class extends Migration
             $table->enum('discount_type', ['flat', 'percent']);
             $table->decimal('sale_price')->default(0);
 
-            $table->longText('description');
+            $table->longText('description')->nullable();
             $table->json('attributes')->nullable();
-            $table->mediumText('note')->nullable();
 
             $table->boolean('enabled')->default(true);
-            $table->boolean('schedule')->default(false);
+            $table->boolean('scheduled')->default(false);
             $table->timestamp('sale_start_date')->nullable();
             $table->timestamp('sale_end_date')->nullable();
 
             $table->timestamps();
             $table->softDeletes();
+
+            $table->unique(['parent_id', 'name']);
         });
     }
 
