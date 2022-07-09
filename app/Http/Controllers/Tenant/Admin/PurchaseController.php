@@ -123,7 +123,7 @@ class PurchaseController extends Controller
      */
     private function selectable(string $model): array
     {
-        return $model::select('id', 'name')
+        return $model::select('id', 'name', 'phone', 'email')
             ->orderBy('name')
             ->get()
             ->toArray();

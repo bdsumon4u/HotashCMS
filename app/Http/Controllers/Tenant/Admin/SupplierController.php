@@ -16,7 +16,7 @@ class SupplierController extends Controller
      */
     public function index()
     {
-        //
+        return Supplier::search(request('search'))->get()->toArray();
     }
 
     /**
@@ -40,10 +40,7 @@ class SupplierController extends Controller
         $supplier = Supplier::create($request->validated());
 
         if ($request->expectsJson()) {
-            return response()->json([
-                'id' => $supplier->id,
-                'name' => $supplier->name,
-            ]);
+            return response()->json($supplier->only(['id', 'name', 'phone', 'email']));
         }
 
         return redirect()->action([static::class, 'index'])->banner('Supplier Has Been Created.');
