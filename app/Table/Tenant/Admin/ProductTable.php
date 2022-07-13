@@ -26,6 +26,7 @@ class ProductTable extends InertiaTable
     protected function query(QueryBuilder $builder): QueryBuilder
     {
         return $builder->defaultSort('name')
+            ->with('variations')
             ->allowedFields(['id', 'sku', 'name', 'barcode'])
             ->allowedSorts(['id', 'sku', 'name', 'barcode'])
             ->orderBy('name');

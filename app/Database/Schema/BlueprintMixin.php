@@ -2,7 +2,6 @@
 
 namespace App\Database\Schema;
 
-/** @mixin \Illuminate\Database\Schema\Blueprint */
 class BlueprintMixin
 {
     public function foreignIdX()

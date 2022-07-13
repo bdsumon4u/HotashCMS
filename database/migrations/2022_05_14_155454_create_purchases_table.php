@@ -24,8 +24,14 @@ return new class extends Migration
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->decimal('subtotal');
-            $table->decimal('discount');
+            $table->decimal('tax')->default(0);
+            $table->decimal('discount_amount')->default(0);
+            $table->enum('discount_type', ['flat', 'percent']);
+            $table->decimal('discount')->default(0);
+            $table->decimal('service_charge')->default(0);
             $table->decimal('total');
+            $table->text('note')->nullable();
+            $table->string('status');
             $table->timestamp('purchased_at');
             $table->timestamps();
             $table->softDeletes();

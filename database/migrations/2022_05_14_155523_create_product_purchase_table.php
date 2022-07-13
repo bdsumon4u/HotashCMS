@@ -24,11 +24,19 @@ return new class extends Migration
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             ### --- PIVOT COLUMNS --- ###
+            $table->foreignIdForX(\App\Models\Unit::class)
+                ->constrained()
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
             $table->decimal('price');
-            $table->integer('quantity');
-            $table->decimal('subtotal');
-            $table->decimal('discount_amount');
+            $table->integer('quantity')->default(1);
+            $table->decimal('discount_amount')->default(0);
             $table->enum('discount_type', ['flat', 'percent']);
+            $table->decimal('tax_amount')->default(0);
+            $table->enum('tax_type', ['exclusive', 'inclusive']);
+            $table->decimal('net_price');
+            $table->decimal('discount')->default(0);
+            $table->decimal('tax')->default(0);
             $table->decimal('total');
             ### --- PIVOT COLUMNS --- ###
             $table->timestamps();

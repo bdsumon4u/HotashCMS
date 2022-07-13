@@ -14,7 +14,7 @@ class Attribute extends Model
     use HasFactory;
     use Searchable;
 
-    protected $fillable = ['group', 'name', 'values'];
+    protected $fillable = ['group', 'name', 'slug', 'values'];
 
     public function values(): AttributeCast
     {

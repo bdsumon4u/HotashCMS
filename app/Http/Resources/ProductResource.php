@@ -16,10 +16,12 @@ class ProductResource extends JsonResource
     {
         return array_merge(parent::toArray($request), [
             'attributes' => $this->resource->attributes ?? [],
-            'variations' => $this->resource->variations
-                ->mapWithKeys(function ($item, $key) {
-                    return [$item->name => $item->toArray()];
-                }),
+            'variations' => $this->when($request->routeIs('*.products.edit'), function () {
+                return $this->resource->variations
+                    ->mapWithKeys(function ($item, $key) {
+                        return [$item->name => $item->toArray()];
+                    });
+            }),
         ]);
     }
 }

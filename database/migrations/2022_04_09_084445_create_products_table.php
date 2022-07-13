@@ -30,6 +30,7 @@ return new class extends Migration
             $table->string('sku', 25)->nullable()->unique();
             $table->string('barcode', 192)->nullable()->unique();
 
+            $table->decimal('purchase_price')->default(0);
             $table->decimal('regular_price')->default(0);
             $table->decimal('discount_amount')->default(0);
             $table->enum('discount_type', ['flat', 'percent']);

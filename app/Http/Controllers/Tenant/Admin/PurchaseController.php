@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Tenant\Admin;
 
+use App\Enums\PurchaseStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePurchaseRequest;
 use App\Http\Requests\UpdatePurchaseRequest;
@@ -9,9 +10,11 @@ use App\Models\Branch;
 use App\Models\Product;
 use App\Models\Purchase;
 use App\Models\Supplier;
-use App\Models\Variation;
+use App\Models\Unit;
 use App\Table\Tenant\Admin\PurchaseTable;
+use Hotash\Ignorable;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class PurchaseController extends Controller
@@ -23,25 +26,38 @@ class PurchaseController extends Controller
      */
     public function index()
     {
+//        dd(Purchase::with('products')->get());
         return Inertia::render('Admin/Purchases/Index')->table(PurchaseTable::class);
     }
 
     public function products(Request $request)
     {
         $products = Product::search($request->get('query'))
-            ->query(fn ($query) => $query->with([
-                'media' => fn ($query) => $query->take(1),
-            ]))
-            ->take(5)->get();
+            ->query(fn ($query) => $query->doesntHave('variations')
+                ->with([
+                    'parent' => fn ($query) => $query->with([
+                        'media' => fn ($query) => $query->take(1),
+                    ])->select('id', 'name'),
+                    'media' => fn ($query) => $query->take(1),
+                ])
+            )->take(5)->get();
 
         return response()->json($products->transform(function ($model) {
+            $data = $model->toArray();
+
+            $data['media'] = $model->media->first()?->preview_url;
+            if ($model->parent) {
+                $data['name'] = $model->parent->name . ' [ ' . $data['name'] . ' ]';
+                if (! $data['media']) {
+                    $data['media'] = $model->parent->media->first()?->preview_url;
+                }
+            }
+
             if (!$model->media) {
                 return $model;
             }
 
-            return array_merge($model->toArray(), [
-                'media' => $model->media->first()?->preview_url,
-            ]);
+            return $data;
         })->toArray());
     }
 
@@ -52,7 +68,15 @@ class PurchaseController extends Controller
      */
     public function create()
     {
+        $statuses = collect(PurchaseStatus::cases())
+            ->map(fn ($case) => [
+                'label' => $case->name,
+                'value' => $case->value
+            ])->toArray();
+
         return Inertia::render('Admin/Purchases/Create', [
+            'statuses' => $statuses,
+            'units' => Unit::all()->toArray(),
             'branches' => $this->selectable(Branch::class),
             'suppliers' => $this->selectable(Supplier::class),
             'products' => Product::all(),
@@ -67,7 +91,19 @@ class PurchaseController extends Controller
      */
     public function store(StorePurchaseRequest $request)
     {
-        //
+//        $request->dd();
+        $data = $request->validated();
+
+        DB::transaction(function () use (&$data) {
+            /** @var Purchase $purchase */
+            $purchase = Purchase::create($data);
+            foreach ($data['products'] as $id => $product) {
+                $data['products'][$id]['net_price'] = 0;
+            }
+            $purchase->products()->attach($data['products']);
+        });
+
+        return back()->banner('Product Purchase Created.');
     }
 
     /**

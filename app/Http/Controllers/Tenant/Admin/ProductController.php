@@ -16,6 +16,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileCannotBeAdded;
 use Spatie\MediaLibrary\MediaCollections\Exceptions\FileDoesNotExist;
@@ -161,11 +162,13 @@ class ProductController extends Controller
         DB::beginTransaction();
         collect(data_get($data, 'variations'))
             ->each(function ($data, $name) use (&$product) {
-                /** @var Variation $variation */
+                /** @var Product $variation */
                 $variation = $product->variations()
                     ->updateOrCreate(
                         compact('name'),
-                        Arr::except($data, 'media')
+                        array_merge(Arr::except($data, 'media'), [
+                            'slug' => Str::slug($name),
+                        ])
                     );
 
                 foreach (data_get($data, 'media', []) as $item) {

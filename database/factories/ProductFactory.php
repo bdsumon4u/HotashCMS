@@ -38,7 +38,7 @@ class ProductFactory extends Factory
             'discount_amount' => $discountAmount,
             'discount_type' => $discountType,
             'sale_price' => $salePrice,
-            'schedule' => false,
+            'scheduled' => false,
             'sale_start_date' => null,
             'sale_end_date' => null,
             'name' => $name = $this->faker->unique()->sentence(),

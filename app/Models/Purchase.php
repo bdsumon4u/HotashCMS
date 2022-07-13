@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\PurchaseStatus;
 use App\Traits\Searchable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -21,7 +22,16 @@ class Purchase extends Model
      *
      * @var string[]
      */
-    protected $fillable = ['name', 'address'];
+    protected $fillable = [
+        'branch_id', 'supplier_id', 'subtotal', 'tax',
+        'discount_amount', 'discount_type', 'discount',
+        'service_charge', 'total', 'note', 'status', 'purchased_at',
+    ];
+
+    protected $casts = [
+        'purchased_at' => 'datetime',
+        'status' => PurchaseStatus::class,
+    ];
 
     public function branch(): BelongsTo
     {

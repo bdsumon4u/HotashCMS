@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Tenant\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
-use App\Models\Variation;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -23,7 +22,7 @@ class PosController extends Controller
                 if ($product->variations->isEmpty()) {
                     return $product;
                 }
-                return $product->variations->map(function (Variation $variation) use (&$product) {
+                return $product->variations->map(function (Product $variation) use (&$product) {
                     return $variation->forceFill([
                         'name' => $product->name . ' ['.$variation->name.']',
                     ]);

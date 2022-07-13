@@ -3,28 +3,28 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class Stock extends Model
+class Stock extends Pivot
 {
     use HasFactory;
 
     /**
-     * The attributes that are mass assignable.
+     * Indicates if the IDs are auto-incrementing.
      *
-     * @var string[]
+     * @var bool
      */
-    protected $fillable = ['name', 'address'];
+    public $incrementing = true;
 
     public function branch(): BelongsTo
     {
         return $this->belongsTo(Branch::class);
     }
 
-    public function saleable(): MorphTo
-    {
-        return $this->morphTo();
-    }
+//    public function saleable(): MorphTo
+//    {
+//        return $this->morphTo();
+//    }
 }

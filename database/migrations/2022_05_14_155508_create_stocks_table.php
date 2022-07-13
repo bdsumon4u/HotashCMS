@@ -26,6 +26,7 @@ return new class extends Migration
                 ->cascadeOnUpdate();
             $table->integer('count');
             $table->decimal('price');
+            $table->decimal('value');
             $table->timestamps();
         });
     }

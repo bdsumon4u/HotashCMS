@@ -14,6 +14,8 @@ class PurchaseResource extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        return array_merge(parent::toArray($request), [
+            'purchased_at' => $this->resource->created_at->format('d-M-Y'),
+        ]);
     }
 }

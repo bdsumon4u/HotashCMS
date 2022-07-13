@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('attributes', function (Blueprint $table) {
             $table->id();
-            $table->string('group', 35)->unique();
+            $table->string('group', 35);
             $table->string('name', 35);
             $table->string('slug', 35);
             $table->json('values')->nullable();

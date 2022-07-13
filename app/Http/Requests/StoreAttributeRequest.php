@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Str;
 
 class StoreAttributeRequest extends FormRequest
 {
@@ -16,6 +17,15 @@ class StoreAttributeRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation()
+    {
+        if (!$this->has('slug')) {
+            $this->merge([
+                'slug' => Str::slug($this->name),
+            ]);
+        }
+    }
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -26,6 +36,7 @@ class StoreAttributeRequest extends FormRequest
         return [
             'group' => ['required', 'max:35'],
             'name' => ['required', 'max:35'],
+            'slug' => ['required', 'max:35'],
             'values' => ['nullable'],
         ];
     }

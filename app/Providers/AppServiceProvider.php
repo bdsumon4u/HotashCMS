@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\ImageKit\ImagekitAdapter;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\ServiceProvider;
@@ -28,6 +29,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        Model::preventLazyLoading(!app()->isProduction());
+
         Storage::extend('imagekit', function ($app, $config) {
             // Get client
             $client = new ImageKit (

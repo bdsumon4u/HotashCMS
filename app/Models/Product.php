@@ -6,6 +6,7 @@ use App\Traits\Searchable;
 use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -44,25 +45,30 @@ class Product extends Model implements HasMedia
         'attributes' => AsArrayObject::class,
     ];
 
-    public function branches(): HasMany
+    public function branches(): BelongsToMany
     {
-        return $this->hasMany(Branch::class);
+        return $this->belongsToMany(Branch::class);
     }
 
     public function purchases(): BelongsToMany
     {
-        return $this->belongsToMany(Purchase::class);
+        return $this->belongsToMany(Purchase::class)->using(Stock::class);
     }
 
-    public function stocks(): MorphMany
-    {
-        return $this->morphMany(Stock::class, 'saleable');
-    }
+//    public function stocks(): MorphMany
+//    {
+//        return $this->morphMany(Stock::class, 'saleable');
+//    }
+//
+//    public function stock($branch): MorphOne
+//    {
+//        $id = $branch instanceof Model ? $branch->getKey() : $branch;
+//        return $this->morphOne(Stock::class, 'saleable')->where('branch_id', $id);
+//    }
 
-    public function stock($branch): MorphOne
+    public function parent(): BelongsTo
     {
-        $id = $branch instanceof Model ? $branch->getKey() : $branch;
-        return $this->morphOne(Stock::class, 'saleable')->where('branch_id', $id);
+        return $this->belongsTo(Product::class);
     }
 
     public function variations(): HasMany
